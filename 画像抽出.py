@@ -8,11 +8,11 @@ import urllib.request
 
 
 class ImageValidationPipe:
-    def __init__(self, output_dir: str, min_size: Tuple[int,int] = (500,500)):
+    def __init__(self, output_dir: str, min_size: tuple[int,int] = (500,500)):
         self.file_path = output_dir
         self.min_size = min_size
         self.ua = UserAgent()
-        self.hedder = {"User-Agent":str(self.ua.chrome)}
+        self.header = {"User-Agent":str(self.ua.chrome)}
 
     @retry(wait=wait_fixed(3))
     def download_img(self, url):
@@ -20,7 +20,7 @@ class ImageValidationPipe:
         soup = BeautifulSoup(response.text,"html.parser")
         for link in soup.find_all("img"):
             try:
-                urlData = requests.get(link.get("src"), headers=self.hedder).content
+                urlData = requests.get(link.get("src"), headers=self.header).content
                 filename = os.path.basename(link.get("src"))
                 try:
                     opener = urllib.request.build_opener()
@@ -29,7 +29,7 @@ class ImageValidationPipe:
                     url_temp = urllib.request.urlopen(link.get("src"))
                     url_temp.close()
                 except Exception as h:
-                    #print(h)
+                    print("2: ",h)
                     continue
                 else:
                     is_broken = self.verify_download(urlData,filename)
@@ -43,9 +43,8 @@ class ImageValidationPipe:
         try:
             with Image.open(self.file_path + "/" + filename) as r:
                 width ,height = r.size
-                im = Image.open(r, "r")
                 try:
-                    im.verify()
+                    r.verify()
                 except Exception as q:
                     print("1")
                     print(q)
@@ -58,8 +57,6 @@ class ImageValidationPipe:
 
     def check_img(self,filename,flag_broken):
         if flag_broken == True:
-            os.remove(self.file_path + "/" + filename)             
-        if os.path.exists(self.file_path + "/" + filename) == True:
             os.remove(self.file_path + "/" + filename)
 
 
