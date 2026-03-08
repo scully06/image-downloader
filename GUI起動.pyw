@@ -1,6 +1,6 @@
 from tkinter import *
 import tkinter.ttk, tkinter.messagebox, tkinter.filedialog
-import 画像抽出
+from 画像抽出 import ImageValidationPipe
 import urllib.request, urllib.error
 root =Tk()
 root.title("URLから画像抽出")
@@ -20,7 +20,8 @@ def URL_input():
         tkinter.messagebox.showwarning("エラー","正しいURLを入力してください。")
         return
     else:
-        画像抽出.get_URL(t.get(),direct)
+        Imagedownload = ImageValidationPipe(direct)
+        Imagedownload.download_img(t.get())
 #ウィジェットの作成
 try:
     frame1 = tkinter.ttk.Frame(root,padding=16)
@@ -29,7 +30,7 @@ try:
     entry1 = tkinter.ttk.Entry(frame1,textvariable=t)
     button1 = tkinter.ttk.Button(
         frame1,text="OK",
-        command=URL_input
+        command=URL_input       
     )
     direct = StringVar()
 except Exception as e:
